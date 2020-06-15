@@ -1,33 +1,24 @@
 import React, { Component } from "react";
-import { firestore } from "../firebase";
 import Posts from "./Posts";
+import Authentication from "./Authentication";
+
+import { Switch, Route, Link } from "react-router-dom";
+import UserProfile from "./UserProfile";
+import PostPage from "./PostPage";
 
 class Application extends Component {
-  state = {
-    posts: [],
-  };
-  unsubscribe = null;
-  componentDidMount = () => {
-    this.unsubscribe = firestore.collection("posts").onSnapshot((snapshot) => {
-      const posts = snapshot.docs.map((docs) => ({
-        id: docs.id,
-        ...docs.data(),
-      }));
-      this.setState({ posts });
-    });
-  };
-
-  componentWillUnmount = () => {
-    this.unsubscribe();
-  };
-
   render() {
-    const { posts } = this.state;
-
     return (
       <main className="Application">
-        <h1>Think Piece</h1>
-        <Posts posts={posts} />
+        <Link to="/">
+          <h1>Think Piece</h1>
+        </Link>
+        <Authentication />
+        <Switch>
+          <Route exact path="/" component={Posts} />
+          <Route exact path="/profile" component={UserProfile} />
+          <Route exact path="/posts/:id" component={PostPage} />
+        </Switch>
       </main>
     );
   }

@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { firestore } from "../firebase";
+import withUser from "./withUser";
 
 class AddPost extends Component {
   state = { title: "", content: "" };
@@ -9,10 +10,11 @@ class AddPost extends Component {
     this.setState({ [name]: value });
   };
 
-  handleSubmit = (event) => {
+  handleSubmit = async (event) => {
     event.preventDefault();
 
     const { title, content } = this.state;
+    const { uid, displayName, email, photoURL } = this.props.user;
     const onCreate = (post) => {
       firestore.collection("posts").add(post);
     };
@@ -21,14 +23,14 @@ class AddPost extends Component {
       title,
       content,
       user: {
-        uid: "1111",
-        displayName: "Abdul Matin",
-        email: "xyz@gmail.com",
-        photoURL: "http://placekitten.com/g/200/200",
+        uid,
+        displayName,
+        email,
+        photoURL,
       },
       favorites: 0,
       comments: 0,
-      // createdAt: new Date(), // firestore has property by default
+      createdAt: new Date(), // firestore has this  property by default, you can remove this too
     };
 
     onCreate(post);
@@ -38,6 +40,7 @@ class AddPost extends Component {
 
   render() {
     const { title, content } = this.state;
+    console.log(this.props);
     return (
       <form onSubmit={this.handleSubmit} className="AddPost">
         <input
@@ -60,4 +63,4 @@ class AddPost extends Component {
   }
 }
 
-export default AddPost;
+export default withUser(AddPost);
